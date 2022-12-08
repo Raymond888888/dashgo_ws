@@ -4,7 +4,7 @@
 import rospy
 from geometry_msgs.msg import Twist
 import os, time
-import thread
+import _thread
 
 import math
 import numpy
@@ -101,7 +101,7 @@ class Stm32:
         self.receive_message_length_ = 0
     
         # Keep things thread safe
-        self.mutex = thread.allocate_lock()
+        self.mutex = _thread.allocate_lock()
             
         # An array to cache analog sensor readings
         self.analog_sensor_cache = [None] * self.N_ANALOG_PORTS
@@ -111,7 +111,7 @@ class Stm32:
     
     def connect(self):
         try:
-            print "Connecting to Stm32 on port", self.port, "..."
+            print("Connecting to Stm32 on port", self.port, "...")
             self.port = Serial(port=self.port, baudrate=self.baudrate, timeout=self.timeout, writeTimeout=self.writeTimeout)
             # The next line is necessary to give the firmware time to wake up.
             time.sleep(1)
@@ -121,15 +121,15 @@ class Stm32:
                 state_, val  = self.get_baud()   
                 if val != self.baudrate:
                     raise SerialException
-            print "Connected at", self.baudrate
-            print "Stm32 is ready."
+            print("Connected at", self.baudrate)
+            print("Stm32 is ready.")
 
         except SerialException:
-            print "Serial Exception:"
-            print sys.exc_info()
-            print "Traceback follows:"
+            print("Serial Exception:")
+            print(sys.exc_info())
+            print("Traceback follows:")
             traceback.print_exc(file=sys.stdout)
-            print "Cannot connect to Stm32!"
+            print("Cannot connect to Stm32!")
             os._exit(1)
 
     def open(self): 
@@ -151,7 +151,7 @@ class Stm32:
 
     def receiveFiniteStates(self, rx_data):
         if self.receive_state_ == self.WAITING_FF:
-            #print str(binascii.b2a_hex(rx_data))
+            #print(str(binascii.b2a_hex(rx_data))
             if rx_data == '\xff':
                 self.receive_state_ = self.WAITING_AA
                 self.receive_check_sum_ =0
@@ -181,20 +181,20 @@ class Stm32:
              uc_tmp_, = struct.unpack("B",rx_data)
              self.receive_check_sum_ = self.receive_check_sum_ + uc_tmp_
              self.byte_count_ +=1
-             #print "byte:"+str(byte_count_) +","+ "rece_len:"+str(receive_message_length_)
+             #print("byte:"+str(byte_count_) +","+ "rece_len:"+str(receive_message_length_)
              if self.byte_count_ >= self.receive_message_length_:
                  self.receive_state_ = self.RECEIVE_CHECK
 
         elif self.receive_state_ == self.RECEIVE_CHECK:
-            #print "checksun:" + str(rx_data) + " " + str(self.receive_check_sum_%255)
+            #print("checksun:" + str(rx_data) + " " + str(self.receive_check_sum_%255)
             #uc_tmp_, = struct.unpack("B",rx_data)
-            #print "checksum:" + str(uc_tmp_) +" " + str((self.receive_check_sum_)%255)
+            #print("checksum:" + str(uc_tmp_) +" " + str((self.receive_check_sum_)%255)
             #if uc_tmp_ == (self.receive_check_sum_)%255:
             if 1:
                 self.receive_state_ = self.WAITING_FF
-                #print str(binascii.b2a_hex(value))
+                #print(str(binascii.b2a_hex(value))
                 #left, right, = struct.unpack('hh', value)
-                #print "left:"+str(left)+", right:"+str(right)
+                #print("left:"+str(left)+", right:"+str(right)
                 return 1 
             else:
                 self.receive_state_ = self.WAITING_FF
@@ -212,10 +212,10 @@ class Stm32:
         value = ''
         attempts = 0
         c = self.port.read(1)
-        #print str(binascii.b2a_hex(c))
+        #print(str(binascii.b2a_hex(c))
         while self.receiveFiniteStates(c) != 1:
             c = self.port.read(1)
-            #print str(binascii.b2a_hex(c))
+            #print(str(binascii.b2a_hex(c))
             attempts += 1
             if attempts * self.interCharTimeout > timeout:
                 return 0
@@ -250,11 +250,11 @@ class Stm32:
                     self.port.write(cmd)
                     res = self.recv(self.timeout)
                 except:
-                    print "Exception executing command: " + str(binascii.b2a_hex(cmd))
+                    print("Exception executing command: " + str(binascii.b2a_hex(cmd)))
                 attempts += 1
         except:
             self.mutex.release()
-            print "Exception executing command: " + str(binascii.b2a_hex(cmd))
+            print("Exception executing command: " + str(binascii.b2a_hex(cmd)))
             return 0
         
         self.mutex.release()
@@ -335,7 +335,7 @@ class Stm32:
         list_len = len(list)
         cs = 0
         for i in range(list_len):
-            #print i, list[i]
+            #print(i, list[i]
             cs += list[i]
         cs=cs%255
         return cs
@@ -446,7 +446,7 @@ class Stm32:
         '''
         cmd_str=struct.pack("6B", self.HEADER0, self.HEADER1, 0x03, 0x10, 0x01, 0x00) + struct.pack("B", 0x14)
         if (self.execute(cmd_str))==1 and self.payload_ack == '\x00':
-           print "start"
+           print("start")
            return  self.SUCCESS
         else:
            return self.FAIL
@@ -456,7 +456,7 @@ class Stm32:
         '''
         cmd_str=struct.pack("6B", self.HEADER0, self.HEADER1, 0x03, 0x10, 0x00, 0x00) + struct.pack("B", 0x13)
         if (self.execute(cmd_str))==1 and self.payload_ack == '\x00':
-           print "stop"
+           print("stop")
            return  self.SUCCESS
         else:
            return self.FAIL
@@ -712,7 +712,7 @@ class BaseController:
                 res = self.Stm32.start_automatic_recharge()
                 self.is_recharge = True
             except:
-		        rospy.logerr("start automatic recharge exception ")
+                rospy.logerr("start automatic recharge exception ")
         else:
             try:
                 res = self.Stm32.stop_automatic_recharge()
@@ -934,7 +934,7 @@ class BaseController:
                 self.lwheel_ele_pub.publish(self.lwheel_ele)
                 self.rwheel_ele = vol4*4
                 self.rwheel_ele_pub.publish(self.rwheel_ele)
-		self.voltage_val = vol5
+                self.voltage_val = vol5
                 self.voltage_pub.publish(self.voltage_val)
                 self.voltage_str_pub.publish(str(vol1) + "," + str(vol2) + "," + str(vol3) + "," + str(vol4) + "," + str(vol5) + "," + str(vol6))
                 self.voltage_percentage_pub.publish(self.volTransPerentage(self.voltage_val))
@@ -943,7 +943,7 @@ class BaseController:
             except:
                 self.lwheel_ele_pub.publish(-1)
                 self.rwheel_ele_pub.publish(-1)
-		self.voltage_pub.publish(-1)
+                self.voltage_pub.publish(-1)
                 self.voltage_str_pub.publish("")
                 rospy.logerr("get voltage exception")
 
@@ -969,8 +969,9 @@ class BaseController:
                 self.recharge_way = way
                 #self.recharge_way_pub.publish(ways)
                 self.recharge_way_pub.publish(self.recharge_way)
-            except Exception,e:
-                #print str(e)
+            # except (Exception,e):
+            except Exception:
+                #print(str(e)
                 self.recharge_way_pub.publish(-1)
                 rospy.logerr("get recharge_way  exception")
 
@@ -1330,12 +1331,12 @@ class BaseController:
                 if(x>0.1):
                     x= temp*x
                 if(x<0.05):
-				    x=0.05
+                    x=0.05
             
             if(self.sonar_r3 >self.safe_range_0 and self.sonar_r3 <= self.safe_range_1 and th >0):
-		        temp = self.sonar_r3/(self.safe_range_1*1.5)
-		        if(th>0.05):
-			        th = temp*th
+                temp = self.sonar_r3/(self.safe_range_1*1.5)
+                if(th>0.05):
+                    th = temp*th
             if(self.sonar_r0 >self.safe_range_0 and self.sonar_r0 <= self.safe_range_1 and x <0):
                 temp = self.sonar_r0/(self.safe_range_1*1.5)
                 if(x<-0.1):
@@ -1343,19 +1344,19 @@ class BaseController:
                 if(x>-0.05):
                     x=-0.05	
 	        #sonar0
-            #print "55555 self.sonar_r0: "+str(self.sonar_r0)
+            #print("55555 self.sonar_r0: "+str(self.sonar_r0)
             if((self.sonar_r0<=self.safe_range_0 and self.sonar_r0>=2) and (x<0)):
                 x= 0.0
                 rospy.logwarn("sonar0 smaller than safe_range_0, cannot back")
 	        #sonar1
-	    if((self.sonar_r1<=self.safe_range_0 and self.sonar_r1>=2) and (x>0)):
-	        x=-0.05
-	        th=0.2
-	        rospy.logwarn("sonar1 smaller than safe_range_0, only trun left")
-	    
-	    if((self.sonar_r1<=self.safe_range_0 and self.sonar_r1>=2) and (th<0)):
-		x=-0.05
-		th=0.2
+            if((self.sonar_r1<=self.safe_range_0 and self.sonar_r1>=2) and (x>0)):
+                x=-0.05
+                th=0.2
+                rospy.logwarn("sonar1 smaller than safe_range_0, only trun left")
+            
+            if((self.sonar_r1<=self.safe_range_0 and self.sonar_r1>=2) and (th<0)):
+                x=-0.05
+                th=0.2
 	        #sonar2
             if((self.sonar_r2<=self.safe_range_0 and self.sonar_r2>=2) and (x>0)):
                 x=-0.05
@@ -1379,17 +1380,17 @@ class BaseController:
                 th=self.start_rotation_limit_w
             elif th>-1.0*self.start_rotation_limit_w and th<0.0:
                 th=-1.0*self.start_rotation_limit_w
-	            #print "1111gaibianhou w= "+str(th)
+	            #print("1111gaibianhou w= "+str(th)
             '''
             right = th * self.wheel_track  * self.gear_reduction / 2.0
             left = -right
         elif th == 0:
-	        #print "222bianhua w=0  v="+str(x)
+	        #print("222bianhua w=0  v="+str(x)
             # Pure forward/backward motion
             left = right = x
         else:
                 # Rotation about a point in space
-	            #print "3333bianhua qian v,w is not 0, v= "+str(x)+ " w= "+str(th)
+	            #print("3333bianhua qian v,w is not 0, v= "+str(x)+ " w= "+str(th)
 	    
                 #if (th>0.0 and th<0.4) and (x>-0.1 and x<0.1):
             '''
@@ -1399,7 +1400,7 @@ class BaseController:
             if (th<0.0 and th >-1.0*self.start_rotation_limit_w) and (x>-0.1 and x<0):
                 th=-1.0*self.start_rotation_limit_w
 	    '''
-                #print "3333bianhua hou v,w is not 0, v= "+str(x)+ " w= "+str(th)
+                #print("3333bianhua hou v,w is not 0, v= "+str(x)+ " w= "+str(th)
             left = x - th * self.wheel_track  * self.gear_reduction / 2.0
             right = x + th * self.wheel_track  * self.gear_reduction / 2.0
 	
@@ -1450,7 +1451,7 @@ class Stm32ROS():
         rospy.loginfo("Connected to Stm32 on port " + self.port + " at " + str(self.baud) + " baud")
      
         # Reserve a thread lock
-        mutex = thread.allocate_lock()
+        mutex = _thread.allocate_lock()
               
         # Initialize the base controller if used
         if self.use_base_controller:
@@ -1480,4 +1481,3 @@ if __name__ == '__main__':
 
 
     
-
