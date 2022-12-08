@@ -1,0 +1,6 @@
+<launch>
+
+  <node name="turtbotfollower" pkg="traffic" type="turtbotfollower" respawn="true" />
+  <node name="lanefollower" pkg="traffic" type="lanefollower" respawn="true" />
+ 
+</launch>

@@ -1,0 +1,6 @@
+<launch>
+
+  <node name="lanetrack" pkg="traffice" type="lanetrack" respawn="true" />
+  <node name="trafficRGB" pkg="traffice" type="trafficRGB" respawn="true" />
+ 
+</launch>

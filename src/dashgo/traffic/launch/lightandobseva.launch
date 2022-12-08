@@ -1,0 +1,7 @@
+<launch>
+
+  <node name="trafficlight" pkg="traffic" type="trafficlight" respawn="true" />
+  <node name="obscontrol" pkg="traffic" type="obscontrol" respawn="true" />
+  <node name="lanetrack" pkg="traffic" type="lanetrack" respawn="true" />
+ 
+</launch>

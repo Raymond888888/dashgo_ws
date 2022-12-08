@@ -1,0 +1,6 @@
+<launch>
+
+  <node name="trafficlight" pkg="traffic" type="trafficlight" respawn="true" />
+  <node name="trafficlane" pkg="traffic" type="trafficlane" respawn="true" />
+ 
+</launch>

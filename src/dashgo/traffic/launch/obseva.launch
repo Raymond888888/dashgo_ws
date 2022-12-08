@@ -1,0 +1,6 @@
+<launch>
+
+  <node name="obscontrol" pkg="traffic" type="obscontrol" respawn="true" />
+  <node name="obsevalane" pkg="traffic" type="obsevalane" respawn="true" />
+ 
+</launch>
