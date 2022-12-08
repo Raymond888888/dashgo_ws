@@ -1,6 +1,6 @@
 #include <stdlib.h>
-#include <cv.h>
-#include <highgui.h>
+#include <opencv2/opencv.hpp>
+#include <opencv2/highgui/highgui.hpp>
 #include <opencv2/opencv.hpp>
 #include <opencv2/core/core.hpp>
 #include "ros/ros.h"
@@ -68,7 +68,7 @@ int TrafficLineAnalysis(Mat frame)
 {
 	//Mat frame = frIn(Rect(0, (frIn.rows >> 1) - 1, frIn.cols, (frIn.rows >> 1)));
 
-	cvtColor(frame, m_frHLS, CV_RGB2HLS);//转换颜色空间
+	cvtColor(frame, m_frHLS, cv::COLOR_RGB2HLS);//转换颜色空间
 	//GaussianBlur(frGray, frGray, Size(3, 3), 0, 0, BORDER_DEFAULT);
 
 	split(m_frHLS, m_HLS);//HLS颜色空间通道分离
@@ -77,8 +77,8 @@ int TrafficLineAnalysis(Mat frame)
 	Sobel(m_HLS[2], m_frGradS, m_HLS[2].depth(), 1, 0);//求解S通道打梯度值
 
 
-	threshold(m_HLS[1], m_frBinL, 140, 200, CV_THRESH_BINARY);//对L通道进行二值化
-	threshold(m_HLS[2], m_frBinS, 140, 200, CV_THRESH_BINARY);//对S通道进行二值化
+	threshold(m_HLS[1], m_frBinL, 140, 200, cv::THRESH_BINARY);//对L通道进行二值化
+	threshold(m_HLS[2], m_frBinS, 140, 200, cv::THRESH_BINARY);//对S通道进行二值化
 /*
 #ifdef IMG_SHOW
 	imshow("frHLS-frL", m_HLS[1]);
@@ -397,9 +397,9 @@ int main(int argc, char **argv)
 	waitKey(1000);
 	Mat frame;//当前帧图片
 	int nFrames = 0;//图片帧数
-	int frameWidth = capture.get(CV_CAP_PROP_FRAME_WIDTH);//图片宽
-	int frameHeight = capture.get(CV_CAP_PROP_FRAME_HEIGHT);//图片高
-	VideoWriter video("outcpp.avi", CV_FOURCC('M', 'J', 'P', 'G'), 25, Size(frameWidth, frameHeight));
+	int frameWidth = capture.get(CAP_PROP_FRAME_WIDTH);//图片宽
+	int frameHeight = capture.get(CAP_PROP_FRAME_HEIGHT);//图片高
+	VideoWriter video("outcpp.avi", cv::VideoWriter::fourcc('M', 'J', 'P', 'G'), 25, Size(frameWidth, frameHeight));
 	int loseLane = 0;//车道线失败帧数
 	while (ros::ok())
 	{

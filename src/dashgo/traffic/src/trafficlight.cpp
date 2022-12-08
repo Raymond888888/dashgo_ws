@@ -31,7 +31,7 @@ CascadeClassifier cascade;
 int dectedRed; //当前帧 红绿灯当检测结果 ，0 没有灯，1 红灯 2, 绿灯
 bool findRed; //是否为红灯状态值
 ros::Publisher pub;
-VideoWriter video("outcpp.avi", CV_FOURCC('M', 'J', 'P', 'G'), 25, Size(640, 480));
+VideoWriter video("outcpp.avi", cv::VideoWriter::fourcc('M', 'J', 'P', 'G'), 25, Size(640, 480));
 //int redPos = INT_MAX;
 
 int trafficDect(cv::Mat _src);//红绿灯检测
@@ -54,7 +54,7 @@ int trafficDect(cv::Mat _src) {
 	cv::Mat imgHsv;
 	cv::Mat imgHsvSplit2;
 	//printf("trafficDect\n");
-	cv::cvtColor(_src, imgHsv, CV_RGB2HSV);//转换颜色空间
+	cv::cvtColor(_src, imgHsv, cv::COLOR_RGB2HSV);//转换颜色空间
 	std::vector<cv::Mat> imgHsvSplit;//颜色空间分量
 	cv::split(imgHsv, imgHsvSplit);
 	imgHsvSplit2 = imgHsvSplit[2];//提出V通道的分量
@@ -272,7 +272,7 @@ void chatterCallbackCam(const sensor_msgs::Image::ConstPtr& msg)
 
     cv::waitKey(10);
     cv::Mat dst;//= src.clone();
-    cv::cvtColor(src,dst,CV_BGR2RGB);//颜色空间转换
+    cv::cvtColor(src,dst,cv::COLOR_BGR2RGB);//颜色空间转换
     //cv::imshow("dstsrc.jpg",dst);
     cv::waitKey(10);
 
@@ -311,7 +311,7 @@ int main(int argc, char **argv)
         ROS_WARN("没有正常导入cascade.xml");
         return 0;
     }
-   //VideoWriter video("outcpp.avi", CV_FOURCC('M', 'J', 'P', 'G'), 25, Size(640, 480));
+   //VideoWriter video("outcpp.avi", cv::VideoWriter::fourcc('M', 'J', 'P', 'G'), 25, Size(640, 480));
     printf("ros init\n");
     
     ros::init(argc,argv,"traffic");

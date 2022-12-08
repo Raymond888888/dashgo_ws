@@ -120,7 +120,7 @@ include_directories(
   ${catkin_INCLUDE_DIRS}
 )
 
-find_package(OpenCV REQUIRED)
+find_package(OpenCV 4 REQUIRED)
 
 include_directories(/usr/include/python2.7)
 link_directories(/usr/lib/python2.7/config-x86_64-linux-gnu)

@@ -13,7 +13,7 @@ find_package(catkin REQUIRED
             std_srvs
         )
 
-find_package(Boost REQUIRED)
+# find_package(Boost REQUIRED)
 
 # dynamic reconfigure
 generate_dynamic_reconfigure_options(
